@@ -43,6 +43,20 @@ function getSingleUser($id){
     }
 }
 
+function getAllUsers(){
+    $pdo = Database::getInstance()->getConnection();
+
+    $get_all_query = 'SELECT * FROM tbl_user';
+    $get_users_result = $pdo->query($get_all_query);
+
+    //TODO: if the execution is successful, return the user data, otherwise return an error message
+    if($get_users_result){
+        return $get_users_result;
+    }else{
+        return false;
+    }
+}
+
 function editUser($id, $fname, $username, $password, $email){
     //TODO: set up database connection
     $pdo = Database::getInstance()->getConnection();
@@ -71,6 +85,28 @@ function editUser($id, $fname, $username, $password, $email){
         redirect_to('index.php');
     }else{
         return 'The user did not update';
+    }
+}
+
+function deleteUser($id){
+    //TODO: finish the function to delete the given user
+    $pdo = Database::getInstance()->getConnection();
+
+    $delete_user_query = 'DELETE FROM tbl_user WHERE user_id = :id';
+    $delete_user_set = $pdo->prepare($delete_user_query);
+    $delete_user_result = $delete_user_set->execute(
+        array(
+            ':id'=>$id,
+        )
+    );
+
+    // If everything went through, redirect to admin_deleteuser.php
+    // otherwise, return false
+    //row count tells us how many rows are being affected by our sql query - we want to make sure it is actually affecting a user (could also do === 1)
+    if($delete_user_result && $delete_user_set->rowCount() > 0){
+        redirect_to('admin_deleteuser.php');
+    }else{
+        return false;
     }
 }
     
